@@ -11,7 +11,7 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
  
-EXPECTED_RESULT = None
+EXPECTED_RESULT = 4748135
 WRONG_RESULTS = [4002875]
 
 SCAN_Y = 2000000
