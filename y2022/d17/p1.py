@@ -11,12 +11,7 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
  
-EXPECTED_RESULT = None
-WRONG_RESULTS = []
-
-# ROCK_COUNT = 1000000000000
-# ROCK_COUNT =   1000000
-ROCK_COUNT =   2022
+ROCK_COUNT = 2022
 
 def getInputData(inputFile):
     raw = getText(inputFile)
@@ -35,8 +30,6 @@ def getInputData(inputFile):
 
 def solution(inputFile):
     (rocks, gusts) = getInputData(inputFile)
-
-    log(len(gusts))
 
     # init cave
     cave = matrixUtils.generate(1, 9, '-')
@@ -57,19 +50,11 @@ def solution(inputFile):
         for lineIndex in range(len(cave)):
             if cave[lineIndex]!=['|','.','.','.','.','.','.','.','|']:
                 rockHeight = max([coord[0] for coord in rock])+1
-                # log(rock)
-                # log(rockHeight)
-                # log(rockHeight+3-lineIndex)
 
                 if (rockHeight+3-lineIndex)<0:
                     rockY=0-(rockHeight+3-lineIndex)
                 cave = [['|','.','.','.','.','.','.','.','|'] for i in range(rockHeight+3-lineIndex)] + cave
                 break
-
-        # logMatrix(cave)
-        # log('')
-
-
 
         # let rock settle
         rockSettled = False
@@ -99,14 +84,8 @@ def solution(inputFile):
 
         for lineIndex in range(0,len(cave)):
             if cave[lineIndex]==['|','#','#','#','#','#','#','#','|']:
-                
-                # logMatrix(cave)
-                # log('')
                 result+=len(cave)-lineIndex-1
                 cave = cave[:lineIndex]+[['+','-','-','-','-','-','-','-','+']]
-                # log(purple('Full line @ %d, cave is now %d tall' %(lineIndex, len(cave))))
-                # logMatrix(cave)
-                # exit(1)
                 break
 
 
@@ -115,7 +94,4 @@ def solution(inputFile):
             result += (len(cave)-lineIndex)-1
             break
 
-    if len(WRONG_RESULTS)>0:
-        log(red("Wrong results", WRONG_RESULTS))
-
-    return (result,EXPECTED_RESULT)
+    return result

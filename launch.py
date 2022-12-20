@@ -55,7 +55,8 @@ from utils.solutionRoot import *
 # import y2022.d12.p1, y2022.d12.p2
 # import y2022.d13.p1, y2022.d13.p2
 # import y2022.d14.p1, y2022.d14.p2
-import y2022.d15.p1, y2022.d15.p2
+# import y2022.d15.p1, y2022.d15.p2
+import y2022.d17.p1, y2022.d17.p2
 
 END_YEAR=2022
 

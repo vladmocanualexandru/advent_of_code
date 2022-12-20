@@ -11,9 +11,6 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
  
-EXPECTED_RESULT = None
-WRONG_RESULTS = []
-
 def getInputData(inputFile):
     raw = getRawLines(inputFile)
     
@@ -24,12 +21,6 @@ def getInputData(inputFile):
 def solution(inputFile):
     inputData = getInputData(inputFile)
 
-    log("input data:")
     log(inputData)
 
-    result=None
-
-    if len(WRONG_RESULTS)>0:
-        log(red("Wrong results", WRONG_RESULTS))
-
-    return (result,EXPECTED_RESULT)
+    return None
