@@ -6,57 +6,7 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
 
-# import y2015.d11.p1,y2015.d11.p2 
-# import y2015.d01.p1,y2015.d01.p2,y2015.d02.p1,y2015.d02.p2,y2015.d03.p1,y2015.d03.p2,y2015.d04.p1,y2015.d04.p2,y2015.d05.p1,y2015.d05.p2
-# import y2015.d06.p1,y2015.d06.p2,y2015.d07.p1,y2015.d07.p2,y2015.d08.p1,y2015.d08.p2,y2015.d09.p1,y2015.d09.p2,y2015.d10.p1,y2015.d10.p2
-# import y2015.d12.p1,y2015.d12.p2 
-
-# import y2016.d11.p1,y2016.d11.p2 
-# import y2016.d01.p1,y2016.d01.p2,y2016.d02.p1,y2016.d02.p2,y2016.d03.p1,y2016.d03.p2,y2016.d04.p1,y2016.d04.p2,y2016.d05.p1,y2016.d05.p2
-# import y2016.d06.p1,y2016.d06.p2,y2016.d07.p1,y2016.d07.p2,y2016.d08.p1,y2016.d08.p2,y2016.d09.p1,y2016.d09.p2,y2016.d10.p1,y2016.d10.p2
-
-# import y2017.d01.p1,y2017.d01.p2,y2017.d02.p1,y2017.d02.p2,y2017.d03.p1,y2017.d03.p2,y2017.d04.p1,y2017.d04.p2,y2017.d05.p1,y2017.d05.p2
-# import y2017.d06.p1,y2017.d06.p2,y2017.d07.p1,y2017.d07.p2,y2017.d08.p1,y2017.d08.p2,y2017.d09.p1,y2017.d09.p2,y2017.d10.p1,y2017.d10.p2
-# import y2017.d11.p1, y2017.d11.p2 
-# import y2017.d12.p1, y2017.d12.p2 
-
-# import y2018.d01.p1,y2018.d01.p2,y2018.d02.p1,y2018.d02.p2,y2018.d03.p1,y2018.d03.p2,y2018.d04.p1,y2018.d04.p2,y2018.d05.p1,y2018.d05.p2
-# import y2018.d06.p1,y2018.d06.p2,y2018.d07.p1,y2018.d07.p2,y2018.d08.p1,y2018.d08.p2,y2018.d09.p1,y2018.d10.p1,y2018.d10.p2
-# import y2018.d11.p1,y2018.d11.p2
-# import y2018.d12.p1,y2018.d12.p2
-
-# import y2019.d01.p1,y2019.d01.p2,y2019.d02.p1,y2019.d02.p2,y2019.d03.p1,y2019.d03.p2,y2019.d04.p1,y2019.d04.p2,y2019.d05.p1,y2019.d05.p2
-# import y2019.d06.p1,y2019.d06.p2,y2019.d07.p1,y2019.d07.p2,y2019.d08.p1,y2019.d08.p2,y2019.d09.p1,y2019.d09.p2,y2019.d10.p1,y2019.d10.p2
-# import y2019.d11.p1,y2019.d11.p2
-# import y2019.d12.p1,y2019.d12.p2
-
-# import y2020.d01.p1,y2020.d01.p2,y2020.d02.p1,y2020.d02.p2,y2020.d03.p1,y2020.d03.p2,y2020.d04.p1,y2020.d04.p2,y2020.d05.p1,y2020.d05.p2
-# import y2020.d06.p1,y2020.d06.p2,y2020.d07.p1,y2020.d07.p2,y2020.d08.p1,y2020.d08.p2,y2020.d09.p1,y2020.d09.p2,y2020.d10.p1,y2020.d10.p2
-# import y2020.d11.p1,y2020.d11.p2
-# import y2020.d12.p1,y2020.d12.p2
-
-# import y2021.d01.p1,y2021.d01.p2,y2021.d02.p1,y2021.d02.p2,y2021.d03.p1,y2021.d03.p2,y2021.d04.p1,y2021.d04.p2,y2021.d05.p1,y2021.d05.p2
-# import y2021.d06.p1,y2021.d06.p2,y2021.d07.p1,y2021.d07.p2,y2021.d08.p1,y2021.d08.p2,y2021.d09.p1,y2021.d09.p2,y2021.d10.p1,y2021.d10.p2
-# import y2021.d11.p1,y2021.d11.p2,y2021.d12.p1,y2021.d12.p2,y2021.d13.p1,y2021.d13.p2,y2021.d14.p1,y2021.d14.p2,y2021.d15.p1,y2021.d15.p2
-# import y2021.d16.p1,y2021.d16.p2,y2021.d17.p1,y2021.d17.p2,y2021.d18.p1,y2021.d18.p2,y2021.d19.p1,y2021.d19.p2,y2021.d20.p1,y2021.d20.p2
-# import y2021.d21.p1,y2021.d21.p2,y2021.d22.p1,y2021.d22.p2,y2021.d23.p1,y2021.d23.p2,y2021.d24.p1,y2021.d24.p2,y2021.d25.p1,y2021.d25.p2
-
-# import y2022.d01.p1, y2022.d01.p2
-# import y2022.d02.p1, y2022.d02.p2
-# import y2022.d03.p1, y2022.d03.p2
-# import y2022.d04.p1, y2022.d04.p2
-# import y2022.d05.p1, y2022.d05.p2
-# import y2022.d06.p1, y2022.d06.p2
-# import y2022.d07.p1, y2022.d07.p2
-# import y2022.d08.p1, y2022.d08.p2
-# import y2022.d09.p1, y2022.d09.p2
-# import y2022.d10.p1, y2022.d10.p2
-# import y2022.d11.p1, y2022.d11.p2
-# import y2022.d12.p1, y2022.d12.p2
-# import y2022.d13.p1, y2022.d13.p2
-# import y2022.d14.p1, y2022.d14.p2
-# import y2022.d15.p1, y2022.d15.p2
-import y2022.d17.p1, y2022.d17.p2
+import y2022.d18.p1, y2022.d18.p2
 
 END_YEAR=2022
 
