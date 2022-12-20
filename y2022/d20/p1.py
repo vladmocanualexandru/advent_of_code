@@ -21,17 +21,43 @@ def getInputData(inputFile):
 def solution(inputFile):
     numbers = getInputData(inputFile)
 
-    for number in ([]+numbers):
-        currentPos = numbers.index(number)
-        numbers.remove(number)
+    # numbers2 = numbers+[]
+    # numbers2.sort()
+    # log(numbers2)
 
-        newPos = (currentPos+number)%len(numbers)
-        numbers = numbers[:newPos]+[number]+numbers[newPos:]
+    # exit(1)
+
+    for number in ([]+numbers):
+        # log(numbers)
+        currentPos = numbers.index(number)
+        del numbers[currentPos]
+
+        oldLeft = (currentPos-1)%len(numbers)
+        oldRight = currentPos
+
+        newLeft = (oldLeft+number)%len(numbers)
+        newRight = (oldRight+number)%len(numbers)
+
+        # log(number, "was between", oldLeft, oldRight)
+        # log("will move to", newLeft, newRight)
+
+        if newRight>newLeft:
+            numbers = numbers[:newLeft+1]+[number]+numbers[newRight:]
+        else:
+            numbers = numbers + [number]
+
+
+    # log(numbers)
+    log(len(numbers))
 
     index0 = numbers.index(0)
 
-    result = numbers[(index0+1000)%len(numbers)]
-    result += numbers[(index0+2000)%len(numbers)]
-    result += numbers[(index0+3000)%len(numbers)]
+    n1000 = numbers[(index0+1000)%len(numbers)]
+    n2000 = numbers[(index0+2000)%len(numbers)]
+    n3000 = numbers[(index0+3000)%len(numbers)]
 
-    return result
+    log(n1000,n2000,n3000)
+
+    log(red(13642))
+
+    return n1000+n2000+n3000
