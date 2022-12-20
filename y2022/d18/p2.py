@@ -10,6 +10,8 @@ from utils.stringOpUtils import *
 from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
+
+import y2022.d18.surfaceCounter as surfaceCounter
  
 def getInputData(inputFile):
     raw = getTuples_numbers(inputFile, ',')
@@ -18,6 +20,8 @@ def getInputData(inputFile):
     
 def solution(inputFile):
     solidCubes = getInputData(inputFile)
+
+    totalSurface = surfaceCounter.countSurfaces(solidCubes)
 
     freeCubes = []
     trappedCubes = []
@@ -55,7 +59,4 @@ def solution(inputFile):
                     trappedCubes.remove([x,y,z])
                     freeCubes.append([x,y,z])
 
-    log(trappedCubes)
-
-    log(red(2628, 2627, 1448, 1394, 1112))
-    return None
+    return totalSurface - surfaceCounter.countSurfaces(trappedCubes)
