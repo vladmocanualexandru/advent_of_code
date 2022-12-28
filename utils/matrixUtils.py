@@ -153,3 +153,11 @@ def rotate(matrix, times=1, cw=True):
 
 def agg(matrix, f):
     return f([f(row) for row in matrix])
+
+def clone(matrix):
+    clonedMatrix = []
+
+    for line in matrix:
+        clonedMatrix.append(line.copy())
+
+    return clonedMatrix
