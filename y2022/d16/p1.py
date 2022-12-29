@@ -67,6 +67,7 @@ def solution(inputFile):
         realValue = ((MINUTES_LIMIT-dist-1)*valves[relevantValve]["flowRate"])
         log("AA ->", relevantValve, "dist=", dist, "potential=", (MINUTES_LIMIT*valves[relevantValve]["flowRate"]),"real=",realValue)
 
+
     # log(totalFlowPotential)
 
     log(red(1417, 1602, 1721, 1981, 1966, 1953, 2030, 2110))
