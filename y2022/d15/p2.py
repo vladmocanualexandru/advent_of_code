@@ -26,8 +26,7 @@ def getInputData(inputFile):
 
     return phase3 
 
-def getManhattanDistance(x1,y1,x2,y2):
-    return abs(x1-x2)+abs(y1-y2)
+
 
 def solution(inputFile):
     sensorReadings = getInputData(inputFile)
@@ -36,7 +35,7 @@ def solution(inputFile):
 
     perimeterSides = []
     for reading in sensorReadings:
-        mDist = getManhattanDistance(reading[0],reading[1],reading[2],reading[3])+1
+        mDist = geometryUtils.getManhattanDistance(reading[0],reading[1],reading[2],reading[3])+1
         reading.append(mDist)
 
         (x,y) = (reading[0],reading[1])

@@ -53,8 +53,8 @@ def trim(matrix, times=1):
 def addAll(matrix, eIsRelevant=lambda e : True, map=lambda e: e):
     return sum( sum(map(e) for e in line if eIsRelevant(e)) for line in matrix)  
 
-def generate(lines, cols, value=0):
-    return [[(value() if callable(value) else value) for i in range(cols)] for j in range(lines)]
+def generate(lines, cols, value=0, valueLogic=lambda e: e):
+    return [[valueLogic(value) for i in range(cols)] for j in range(lines)]
 
 def setAreaToValue(matrix, startLine, startCol, endLine, endCol, value):
     for lineI in range(startLine, endLine):
@@ -153,6 +153,14 @@ def rotate(matrix, times=1, cw=True):
 
 def agg(matrix, f):
     return f([f(row) for row in matrix])
+
+def collapse(matrix):
+    collapsedMatrix = []
+
+    for line in matrix:
+        collapsedMatrix+=line
+
+    return collapsedMatrix
 
 def clone(matrix):
     clonedMatrix = []

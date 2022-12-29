@@ -1,3 +1,5 @@
+import math
+
 # generate intersection point of segments AB and CD, defined by A and B, and C and D
 # a, b, c, d are (x,y) coordinate tuples
 #
@@ -37,3 +39,15 @@ def getIntersection( a, b, c, d ) :
 
 
     return intersection_point
+
+def get2DDistance(a,b):
+    return get2DDistance(a[0],a[1],b[0],b[1])
+
+def get2DDistance(x1,y1,x2,y2):
+    return math.sqrt(math.pow(x1-x2,2)+math.pow(y1-y2,2))
+
+def getManhattanDistance(a,b):
+    return getManhattanDistance(a[0],a[1],b[0],b[1])
+
+def getManhattanDistance(x1,y1,x2,y2):
+    return abs(x1-x2)+abs(y1-y2)

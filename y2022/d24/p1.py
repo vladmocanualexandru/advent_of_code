@@ -1,4 +1,4 @@
-import sys, os, math
+import sys, os, math, random
 import numpy as np
 import pandas as pd
 
@@ -12,88 +12,101 @@ from utils.labelMakerUtils import *
 from utils.solutionRoot import *
  
 DIRECTIONS = {">":(0,1),"v":(1,0),"<":(0,-1),"^":(-1,0)}
-
-def vizualizeMap(map, storms):
-
-    cloneMap = matrixUtils.clone(map)
-    for storm in storms:
-        (stormY, stormX) = (storm["location"][0], storm["location"][1])
-        if cloneMap[stormY][stormX] == '.':
-            cloneMap[stormY][stormX] = storm["type"]
-        elif cloneMap[stormY][stormX] in DIRECTIONS:
-            cloneMap[stormY][stormX] = 2
-        else:
-            cloneMap[stormY][stormX] += 1
-
-    logMatrix(cloneMap)
-
-def moveStorm(storm, portals):
-    location = storm["location"]
-    directionData = DIRECTIONS[storm["type"]]
-
-    location[0] = location[0] + directionData[0]
-    location[1] = location[1] + directionData[1]
-
-    if (location[0],location[1]) in portals:
-        newLocation = portals[(location[0],location[1])]
-
-        location[0] = newLocation[0]
-        location[1] = newLocation[1]
+DEFAULT_MIN_MINUTE_VALUE = 1000
 
 def getInputData(inputFile):
-    originalMap = getTuples_text(inputFile,'')
+    originalMap = matrixUtils.wrap(getTuples_text(inputFile,''),'x',1)
 
     map = matrixUtils.generate(len(originalMap), len(originalMap[0]), '.')
     
-    storms = []
+    stormCoords = []
+    stormDirections = []
+
     portals = {}
     for lineIndex in range(len(originalMap)):
         for colIndex in range(len(originalMap[0])):
             mapChar = originalMap[lineIndex][colIndex]
             if mapChar in ['>','v','<','^']:
-                storms.append({"type":mapChar, "location":[lineIndex, colIndex]})
-            elif mapChar == '#':
-                map[lineIndex][colIndex] = '#'
-                if lineIndex==0:
-                    portals[(lineIndex,colIndex)] = (len(originalMap)-2, colIndex)
-                elif lineIndex == len(originalMap)-1:
-                    portals[(lineIndex,colIndex)] = (1, colIndex)
-                elif colIndex == 0:
-                    portals[(lineIndex,colIndex)] = (lineIndex, len(originalMap[0])-2)
-                elif colIndex == len(originalMap[0])-1:
-                    portals[(lineIndex,colIndex)] = (lineIndex, 1)
-                # else:
-                #     # normal positions are portals to themselves - might be an optimization point
-                #     portals[(lineIndex,colIndex)] = (lineIndex, colIndex)
+                stormCoords.append([lineIndex, colIndex])
+                stormDirections.append(DIRECTIONS[mapChar])
+            else:
+                map[lineIndex][colIndex] = mapChar
 
-    return (map, storms, portals)
+            if lineIndex==1:
+                portals[(lineIndex,colIndex)] = [len(originalMap)-3, colIndex]
+            elif lineIndex == len(originalMap)-2:
+                portals[(lineIndex,colIndex)] = [2, colIndex]
+            elif colIndex == 1:
+                portals[(lineIndex,colIndex)] = [lineIndex, len(originalMap[0])-3]
+            elif colIndex == len(originalMap[0])-2:
+                portals[(lineIndex,colIndex)] = [lineIndex, 2]
+            else:
+                portals[(lineIndex,colIndex)] = [lineIndex, colIndex]
+
+    return (map, stormCoords, stormDirections, portals)
+
+def vizualizeMap(map, stormCoords, myY, myX):
+
+    cloneMap = matrixUtils.clone(map)
+    for [sY,sX] in stormCoords:
+        if cloneMap[sY][sX] == '.':
+            cloneMap[sY][sX] = "*"
+        elif cloneMap[sY][sX] == "*":
+            cloneMap[sY][sX] = 2
+        else:
+            cloneMap[sY][sX] += 1
+
+    cloneMap[myY][myX] = 'E'
+
+    logMatrix(cloneMap)
+
+NEXT_MOVES = [(0,1), (1,0), (0,0), (-1,0), (0,-1)]
+
+def cloneStormCoords(stormCoords):
+    return [stormCoord.copy() for stormCoord in stormCoords]
+
+def isFree(y, x, minute, stormCoordHistory):
+    return not [y,x] in stormCoordHistory[minute]
 
 def solution(inputFile):
-    (map, storms, portals) = getInputData(inputFile)
+    (map, stormCoords, stormDirections, portals) = getInputData(inputFile)
 
-    height = len(map)
-    width = len(map[0])
+    myY,myX = (1,2) 
 
-    myY,myX = (0,1) 
-    destinationY,destinationX = (height-1,width-2) 
+    # build storm model while looking for cyclicity
+    stormCoordHistory = [cloneStormCoords(stormCoords)]
+    while True:
+        # move storm
+        for stormIndex in range(len(stormCoords)):
+            stormCoord = stormCoords[stormIndex]
+            stormDirection = stormDirections[stormIndex]
 
-    minuteCounter = 0
+            stormCoords[stormIndex] = portals[(stormCoord[0] + stormDirection[0],stormCoord[1] + stormDirection[1])]
 
-    vizualizeMap(map.copy(), storms)
-    time.sleep(1)
+        # check if current configuration has been encountered before
+        if stormCoords in stormCoordHistory:
+            log('Found pattern @ minute', len(stormCoordHistory))
+            break
+        else:
+            # record current storm configuration
+            stormCoordHistory.append(cloneStormCoords(stormCoords))
 
-    while minuteCounter<3600:
-        # move storms
-        for storm in storms:
-            moveStorm(storm, portals)
+    # based on storm model, build all y/x/minute nodes and connections between them
+    nodes = {}
 
-        minuteCounter+=1
+    for minuteCounter in range(len(stormCoordHistory)-1):
+        currentStorm = stormCoordHistory[minuteCounter]
 
-        if minuteCounter%12 == 0:
-            log(minuteCounter)
-            vizualizeMap(map, storms)
-            time.sleep(1)
+        
 
 
+    log(isFree(4,2,2, stormCoordHistory))
+
+
+
+
+    log(red(434, 151, 396, 392, 345, 324))
+
+    # navigate(0, DEFAULT_MIN_MINUTE_VALUE, myY, myX, destinationY, destinationX, map, stormCoordHistory,[])
 
     return None
