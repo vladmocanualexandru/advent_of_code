@@ -23,7 +23,7 @@ def getInputData(inputFile):
 
     phase2 = {}
     for entry in phase1:
-        phase2[entry[0]] = {"flowRate":entry[1], "tunnelsTo":entry[2], "proximityValue":0}
+        phase2[entry[0]] = {"flowRate":entry[1], "tunnelsTo":entry[2]}
 
     return phase2 
 
@@ -48,28 +48,50 @@ def getDistance(start, stop, valves):
 
     return None
 
-def compareOptions(o1,o2):
-    if o1["loss"] != o2["loss"]:
-        return o1["loss"]-o2["loss"]
-    else:
-        return o2["flowRate"]-o1["flowRate"]
+def chooseNextValve(totalFlow, flowRate, currentValve, elapsedMinutes, openValves, relevantValves, valve1ToValve2Distances, flowRates):
+    maxFlow = 0
+    for tuple in [tuple for tuple in valve1ToValve2Distances if tuple[0]==currentValve and not tuple[1] in openValves]:
+        newElapsedMinutes = elapsedMinutes + tuple[2] + 1
+        newTotalFlow = totalFlow + flowRate*(tuple[2] + 1)
+
+        if newElapsedMinutes<=MINUTES_LIMIT:
+            maxFlow = max(maxFlow,chooseNextValve(newTotalFlow, flowRate + flowRates[tuple[1]], tuple[1], newElapsedMinutes, openValves+[tuple[1]], relevantValves, valve1ToValve2Distances, flowRates))
+        else:
+            # out of time
+            break
+
+    maxFlow = max(maxFlow, totalFlow + flowRate*(MINUTES_LIMIT - elapsedMinutes))
+
+    return maxFlow
+        
 
 def solution(inputFile):
     valves = getInputData(inputFile)
+    relevantValves = [valve for valve in valves if valves[valve]["flowRate"]>0]
 
-    relevantValves = [valveLabel for valveLabel in valves if valves[valveLabel]["flowRate"]>0]
-
-    # log("totalFlowPotential", totalFlowPotential)
+    valve1ToValve2Distances = []
+    valveAAToValveDistances = {}
+    flowRates = {}
 
     for relevantValve in relevantValves:
-        dist = getDistance("AA", relevantValve, valves)
-        potentialValue = (MINUTES_LIMIT*valves[relevantValve]["flowRate"])
-        realValue = ((MINUTES_LIMIT-dist-1)*valves[relevantValve]["flowRate"])
-        log("AA ->", relevantValve, "dist=", dist, "potential=", (MINUTES_LIMIT*valves[relevantValve]["flowRate"]),"real=",realValue)
+        valveAAToValveDistances[relevantValve] = getDistance('AA', relevantValve, valves)
+        flowRates[relevantValve] = valves[relevantValve]["flowRate"]
 
+    for valveIndexA in range(len(relevantValves)-1):
+        for valveIndexB in range(valveIndexA+1, len(relevantValves)):
+            valveA = relevantValves[valveIndexA]
+            valveB = relevantValves[valveIndexB]
 
-    # log(totalFlowPotential)
+            dist = getDistance(valveA, valveB, valves)
+            valve1ToValve2Distances.append((valveA,valveB,dist))
+            valve1ToValve2Distances.append((valveB,valveA,dist))
 
-    log(red(1417, 1602, 1721, 1981, 1966, 1953, 2030, 2110))
+    valve1ToValve2Distances.sort(key=lambda e:e[2])
 
-    return None
+    maxFlow = 0
+    for relevantValve in relevantValves:
+        elapsedMinutes = valveAAToValveDistances[relevantValve]+1
+
+        maxFlow = max(maxFlow, chooseNextValve(0, flowRates[relevantValve], relevantValve, elapsedMinutes, [relevantValve], relevantValves, valve1ToValve2Distances, flowRates))
+
+    return maxFlow
