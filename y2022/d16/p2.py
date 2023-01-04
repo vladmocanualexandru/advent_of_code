@@ -14,7 +14,11 @@ from utils.labelMakerUtils import *
 from utils.solutionRoot import *
  
 DEFAULT_TENT_DISTANCE = pow(10,10)
-MINUTES_LIMIT = 30
+MINUTES_LIMIT = 26
+
+relevantValves = []
+valve1ToValve2Distances = []
+flowRates={}
 
 def getInputData(inputFile):
     raw = getTuples_text(inputFile, " has flow rate=", "; tunnel", " to ", ", ", "Valve ")
@@ -48,26 +52,64 @@ def getDistance(start, stop, valves):
 
     return None
 
-def findPossibleSolutions(totalFlow, flowRate, currentValve, elapsedMinutes, openValves, relevantValves, valve1ToValve2Distances, flowRates, solutionsCollector):
-    for tuple in [tuple for tuple in valve1ToValve2Distances if tuple[0]==currentValve and not tuple[1] in openValves]:
-        newElapsedMinutes = elapsedMinutes + tuple[2] + 1
-        newTotalFlow = totalFlow + flowRate*(tuple[2] + 1)
+def calculateMaxFlow(elapsedMinutesE, elapsedMinutesP, totalFlowE, totalFlowP, flowRateE, flowRateP, currentValveE, currentValveP,  openValves):
 
-        if newElapsedMinutes<=MINUTES_LIMIT:
-            findPossibleSolutions(newTotalFlow, flowRate + flowRates[tuple[1]], tuple[1], newElapsedMinutes, openValves+[tuple[1]], relevantValves, valve1ToValve2Distances, flowRates,solutionsCollector)
-        else:
+    maxFlow = 0
+
+    noMoreValves = False
+    for tupleE in [tuple for tuple in valve1ToValve2Distances if tuple[0]==currentValveE and not tuple[1] in openValves]:
+        for tupleP in [tuple for tuple in valve1ToValve2Distances if tuple[0]==currentValveP and not tuple[1] in openValves]:
+            if tupleE[1] != tupleP[1]:
+                # log(openValvesE, openValvesP, tupleE, tupleP)
+                newElapsedMinutesE = elapsedMinutesE + tupleE[2] + 1
+                newElapsedMinutesP = elapsedMinutesP + tupleP[2] + 1
+
+                if newElapsedMinutesE>MINUTES_LIMIT and newElapsedMinutesP>MINUTES_LIMIT:
+                    noMoreValves = True
+                    break
+
+                newTotalFlowE = totalFlowE
+                newTotalFlowP = totalFlowP
+
+                newFlowRateE = flowRateE
+                newFlowRateP = flowRateP
+
+                newCurrentValveE = currentValveE
+                newCurrentValveP = currentValveP
+                
+                newOpenValves = openValves.copy()
+
+                if newElapsedMinutesE<=MINUTES_LIMIT:
+                    newTotalFlowE += flowRateE*(tupleE[2] + 1)
+                    newFlowRateE += flowRates[tupleE[1]]
+                    newCurrentValveE = tupleE[1]
+                    newOpenValves.append(newCurrentValveE)
+                else:
+                    newElapsedMinutesE = elapsedMinutesE
+
+                if newElapsedMinutesP<=MINUTES_LIMIT:
+                    newTotalFlowP += flowRateP*(tupleP[2] + 1)
+                    newFlowRateP += flowRates[tupleP[1]]
+                    newCurrentValveP = tupleP[1]
+                    newOpenValves.append(newCurrentValveP)
+                else:
+                    newElapsedMinutesP = elapsedMinutesP
+
+                maxFlow = max(maxFlow, calculateMaxFlow(newElapsedMinutesE, newElapsedMinutesP, newTotalFlowE, newTotalFlowP, newFlowRateE, newFlowRateP, newCurrentValveE, newCurrentValveP,  newOpenValves))
+        
+        if noMoreValves:
             break
-    else:
-        solutionsCollector.append((openValves, totalFlow + flowRate*(MINUTES_LIMIT - elapsedMinutes)))
 
+    totalFlow = totalFlowE + flowRateE*(MINUTES_LIMIT - elapsedMinutesE)
+    totalFlow += totalFlowP + flowRateP*(MINUTES_LIMIT - elapsedMinutesP)
+
+    return max(maxFlow, totalFlow)
 
 def solution(inputFile):
     valves = getInputData(inputFile)
     relevantValves = [valve for valve in valves if valves[valve]["flowRate"]>0]
 
-    valve1ToValve2Distances = []
-    valveAAToValveDistances = {}
-    flowRates = {}
+    valveAAToValveDistances = {}    
 
     for relevantValve in relevantValves:
         valveAAToValveDistances[relevantValve] = getDistance('AA', relevantValve, valves)
@@ -84,15 +126,17 @@ def solution(inputFile):
 
     valve1ToValve2Distances.sort(key=lambda e:e[2])
 
-    solutionsCollector = []
-    for relevantValve in relevantValves:
-        elapsedMinutes = valveAAToValveDistances[relevantValve]+1
-
-        findPossibleSolutions(0, flowRates[relevantValve], relevantValve, elapsedMinutes, [relevantValve], relevantValves, valve1ToValve2Distances, flowRates,solutionsCollector)
-
     maxFlow = 0
-    for solution in solutionsCollector:
-        maxFlow = max(maxFlow, solution[1])
-        log(solution)
+    for valveEIndex in range(len(relevantValves)-1):
+        for valvePIndex in range(valveEIndex+1, len(relevantValves)):
+            log(valveEIndex, valvePIndex)
+
+            valveE = relevantValves[valveEIndex]
+            valveP = relevantValves[valvePIndex]
+
+            elapsedMinutesE = valveAAToValveDistances[valveE]+1
+            elapsedMinutesP = valveAAToValveDistances[valveP]+1
+
+            maxFlow = max(maxFlow, calculateMaxFlow(elapsedMinutesE, elapsedMinutesP, 0, 0, flowRates[valveE], flowRates[valveP], valveE, valveP, [valveE, valveP]))
         
     return maxFlow
