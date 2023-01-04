@@ -16,10 +16,6 @@ from utils.solutionRoot import *
 DEFAULT_TENT_DISTANCE = pow(10,10)
 MINUTES_LIMIT = 26
 
-relevantValves = []
-valve1ToValve2Distances = []
-flowRates={}
-
 def getInputData(inputFile):
     raw = getTuples_text(inputFile, " has flow rate=", "; tunnel", " to ", ", ", "Valve ")
     
@@ -52,11 +48,31 @@ def getDistance(start, stop, valves):
 
     return None
 
+def chooseNextValve(totalFlow, flowRate, currentValve, elapsedMinutes, openValves, relevantValves, valve1ToValve2Distances, flowRates, solutionCollector):
+    noMoreValves = True
+    for tuple in [tuple for tuple in valve1ToValve2Distances if tuple[0]==currentValve and not tuple[1] in openValves]:
+        noMoreValves = False
+        newElapsedMinutes = elapsedMinutes + tuple[2] + 1
+        newTotalFlow = totalFlow + flowRate*(tuple[2] + 1)
+
+        if newElapsedMinutes<=MINUTES_LIMIT:
+            chooseNextValve(newTotalFlow, flowRate + flowRates[tuple[1]], tuple[1], newElapsedMinutes, openValves+[tuple[1]], relevantValves, valve1ToValve2Distances, flowRates, solutionCollector)
+        else:
+            solutionCollector.append((openValves, totalFlow+flowRate*(MINUTES_LIMIT-elapsedMinutes)))
+            # out of time
+            break
+
+    if noMoreValves:
+        solutionCollector.append((openValves, totalFlow+flowRate*(MINUTES_LIMIT-elapsedMinutes)))
+        
+
 def solution(inputFile):
     valves = getInputData(inputFile)
     relevantValves = [valve for valve in valves if valves[valve]["flowRate"]>0]
 
-    valveAAToValveDistances = {}    
+    valve1ToValve2Distances = []
+    valveAAToValveDistances = {}
+    flowRates = {}
 
     for relevantValve in relevantValves:
         valveAAToValveDistances[relevantValve] = getDistance('AA', relevantValve, valves)
@@ -73,100 +89,14 @@ def solution(inputFile):
 
     valve1ToValve2Distances.sort(key=lambda e:e[2])
 
-    # init stateCollection
-    stateCollection = []
+    solutionCollector = []
+    for relevantValve in relevantValves:
+        elapsedMinutes = valveAAToValveDistances[relevantValve]+1
 
-    # for valveIndexA in range(len(relevantValves)-1):
-        # for valveIndexB in range(valveIndexA+1, len(relevantValves)):
-    valveIndexA = 0 
-    valveIndexB = 1 
-    
-    valveA = relevantValves[valveIndexA]
-    valveB = relevantValves[valveIndexB]
+        chooseNextValve(0, flowRates[relevantValve], relevantValve, elapsedMinutes, [relevantValve], relevantValves, valve1ToValve2Distances, flowRates, solutionCollector)
 
-    # elapsedMinutesA, elapsedMinutesB, totalFlowA, totalFlowB, flowRateA, flowRateB, currentValveA, currentValveB, openValves
-    elapsedMinutesA = valveAAToValveDistances[valveA]+1
-    elapsedMinutesB = valveAAToValveDistances[valveB]+1
-    flowRateA = flowRates[valveA]
-    flowRateB = flowRates[valveB]
-    openValves = [valveA, valveB]
+    solutionCollector.sort(key=lambda e:e[1], reverse=True)
 
-    stateCollection.append((elapsedMinutesA, elapsedMinutesB, 0, 0, flowRateA, flowRateB, valveA, valveB, openValves))
+    log(solutionCollector[:5])
 
-    knownStates = []
-
-    maxTotalFlowRate = 0
-    while len(stateCollection)>0:
-        # queue <-> BFS
-        # currentState = stateCollection.pop(0)
-
-        # queue <-> DFS
-        currentState = stateCollection.pop(-1)
-
-        knownStates.append(currentState)
-
-        (elapsedMinutesA, elapsedMinutesB, totalFlowA, totalFlowB, flowRateA, flowRateB, currentValveA, currentValveB, openValves) = currentState
-
-        noMoreValves = False
-        newMoveGenerated = False
-        for tupleA in [tuple for tuple in valve1ToValve2Distances if tuple[0]==currentValveA and not tuple[1] in openValves]:
-            for tupleB in [tuple for tuple in valve1ToValve2Distances if tuple[0]==currentValveB and not tuple[1] in openValves]:
-                if tupleA[1] != tupleB[1]:
-                    newMoveGenerated = True
-
-                    newElapsedMinutesA = elapsedMinutesA + tupleA[2] + 1
-                    newElapsedMinutesB = elapsedMinutesB + tupleB[2] + 1
-
-                    if newElapsedMinutesA>MINUTES_LIMIT and newElapsedMinutesB>MINUTES_LIMIT:
-                        noMoreValves = True
-                        break
-
-                    newTotalFlowA = totalFlowA
-                    newTotalFlowB = totalFlowB
-
-                    newFlowRateA = flowRateA
-                    newFlowRateB = flowRateB
-
-                    newCurrentValveA = currentValveA
-                    newCurrentValveB = currentValveB
-                    
-                    newOpenValves = openValves.copy()
-
-                    if newElapsedMinutesA<=MINUTES_LIMIT:
-                        newTotalFlowA += flowRateA*(tupleA[2] + 1)
-                        newFlowRateA += flowRates[tupleA[1]]
-                        newCurrentValveA = tupleA[1]
-                        newOpenValves.append(newCurrentValveA)
-                    else:
-                        newElapsedMinutesA = elapsedMinutesA
-
-                    if newElapsedMinutesB<=MINUTES_LIMIT:
-                        newTotalFlowB += flowRateB*(tupleB[2] + 1)
-                        newFlowRateB += flowRates[tupleB[1]]
-                        newCurrentValveB = tupleB[1]
-                        newOpenValves.append(newCurrentValveB)
-                    else:
-                        newElapsedMinutesB = elapsedMinutesB
-
-                    newOpenValves.sort()
-                    state = (newElapsedMinutesA, newElapsedMinutesB, newTotalFlowA, newTotalFlowB, newFlowRateA, newFlowRateB, newCurrentValveA, newCurrentValveB, newOpenValves)
-                    
-                    if not state in knownStates:
-                        stateCollection.append(state)
-        
-            if noMoreValves:
-                currentTotalFlow = totalFlowA + flowRateA*(MINUTES_LIMIT - elapsedMinutesA)
-                currentTotalFlow += totalFlowB + flowRateB*(MINUTES_LIMIT - elapsedMinutesB)
-                
-                maxTotalFlowRate = max(maxTotalFlowRate, currentTotalFlow)
-                # log(maxTotalFlowRate)
-                break
-
-        if not newMoveGenerated:
-            currentTotalFlow = totalFlowA + flowRateA*(MINUTES_LIMIT - elapsedMinutesA)
-            currentTotalFlow += totalFlowB + flowRateB*(MINUTES_LIMIT - elapsedMinutesB)
-            
-            maxTotalFlowRate = max(maxTotalFlowRate, currentTotalFlow)
-            # log(maxTotalFlowRate)
-
-    return maxTotalFlowRate
+    return None
