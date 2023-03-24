@@ -48,12 +48,12 @@ def calculateBestArrangement(chosen, all, connections, solutions):
 
 def solution(inputFile):
     connections = getInputData(inputFile)
+    connections["nodeA2"] = connections.apply(lambda e : e["nodeA"] if e["nodeA"]<e["nodeB"] else e["nodeB"], axis=1)
+    connections["nodeB2"] = connections.apply(lambda e : e["nodeB"] if e["nodeA"]<e["nodeB"] else e["nodeA"], axis=1)
+    connections = connections.drop(columns=["nodeA", "nodeB"], axis=1).sort_values(by=["nodeA2", "nodeB2"]).groupby(by=["nodeA2","nodeB2"]).sum().reset_index()
 
-    people = connections["nodeA"].unique()
 
-    solutions = []
-    calculateBestArrangement([], people, connections, solutions)
+    log(connections)
+    log(len(connections))
 
-    solutions = pd.DataFrame(solutions, columns = ["people", "happiness"]).sort_values(by="happiness", ascending=False)
-
-    return solutions.head(1)
+    return None
