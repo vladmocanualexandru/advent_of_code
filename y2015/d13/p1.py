@@ -18,6 +18,7 @@ def getInputData(inputFile):
     processed["weight"] = processed["weight_dirty"].apply(lambda e : int(e.replace("gain ", "").replace("lose ", "")) * (-1 if "lose" in e else 1))
     processed.drop("weight_dirty", axis=1, inplace=True)
 
+
     return processed
 
 def calculateHappiness(peopleArrangement, connections):
