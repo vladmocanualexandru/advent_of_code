@@ -3,3 +3,4 @@ playground.ipynb
 .vscode/
 venv
 input.txt
+.DS_Store

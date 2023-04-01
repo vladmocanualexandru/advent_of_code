@@ -10,6 +10,8 @@ from utils.stringOpUtils import *
 from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
+
+EXPECTED_RESULT = None
  
 def getInputData(inputFile):
     raw = getRawLines(inputFile)
@@ -23,4 +25,5 @@ def solution(inputFile):
 
     log(inputData)
 
-    return None
+    result = None
+    return (result, EXPECTED_RESULT)
