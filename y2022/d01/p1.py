@@ -25,15 +25,18 @@ def solution(inputFile):
 
     sums = []
     sum = 0
+
+    maxBlock = 0
+
     for item in inputData:
         if item == '':
-            sums.append(sum)
+            maxBlock = max(maxBlock, sum)
             sum = 0
         else:
             sum += int(item)
 
-    s = pd.Series(sums).sort_values(ascending=False)
-        
-    result=s.iloc[0]
+    maxBlock = max(maxBlock, sum)
+    
+    result=maxBlock
 
     return (result,EXPECTED_RESULT)
