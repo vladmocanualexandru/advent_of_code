@@ -11,10 +11,10 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
 
-EXPECTED_RESULT = None
+EXPECTED_RESULT = 222870
  
 def getInputData(inputFile):
-    rawDf = pd.DataFrame(getTuples_text("y2015/d15/input.txt", ": capacity ",", durability ", ", flavor ", ", texture ",", calories "),
+    rawDf = pd.DataFrame(getTuples_text(inputFile, ": capacity ",", durability ", ", flavor ", ", texture ",", calories "),
                       columns=["ingredient", "capacity", "durability", "flavor", "texture", "calories"]).set_index("ingredient")
 
     rawDf["capacity"] = pd.to_numeric(rawDf["capacity"])
@@ -28,41 +28,25 @@ def getInputData(inputFile):
 def solution(inputFile):
     ingredients = getInputData(inputFile)
     
-    log(ingredients)
+    candidates = [[t1,t2,t3,100-t1-t2-t3] for t1 in range(1,98,1) for t2 in range(1, 99-t1, 1) for t3 in range(1, 100-t1-t2)]
 
-    candidates = [(t1,t2,t3,100-t1-t2-t3) for t1 in range(1,98,1) for t2 in range(1, 99-t1, 1) for t3 in range(1, 100-t1-t2)]
+    for prop in ["capacity", "durability", "flavor", "texture"]:
+        filteredCandidates = []
+        for candidate in candidates:
+            value = candidate[0]*ingredients.iloc[0][prop]
+            value += candidate[1]*ingredients.iloc[1][prop]
+            value += candidate[2]*ingredients.iloc[2][prop]
+            value += candidate[3]*ingredients.iloc[3][prop]
 
-    log(len(candidates))
+            if value > 0:
+                filteredCandidates.append(candidate+[value])
 
-    result = 0
-    for candidate in candidates:
-        (t1,t2,t3,t4) = candidate
+        candidates = filteredCandidates
 
-        
+    candidatesDf = pd.DataFrame(candidates)
 
+    candidatesDf["prod"] = candidatesDf[4] * candidatesDf[5] * candidatesDf[6] * candidatesDf[7]
 
-    result = 0
-    # for t1 in range(1,98,1):
-        
-    #     for t2 in range(1,99-t1,1):
-    #         for t3 in range(1,100-t1-t2,1):
-    #             t4 = 100-t1-t2-t3
-
-    #             # log(t1,t2,t3,t4)
-    #             # recipe = ingredients.copy()
-
-    #             # recipe.iloc[0] = recipe.iloc[0] * t1
-    #             # recipe.iloc[1] = recipe.iloc[1] * t2 
-    #             # recipe.iloc[2] = recipe.iloc[2] * t3
-    #             # recipe.iloc[3] = recipe.iloc[3] * t4
-
-    #             # capacity = np.sum(recipe["capacity"])
-    #             # durability = np.sum(recipe["durability"])
-    #             # flavor = np.sum(recipe["flavor"])
-    #             # texture = np.sum(recipe["texture"])
-
-    #             # if np.min([capacity,durability,flavor,texture])>0:
-    #             #     result = max(result, capacity*durability*flavor*texture)
-    #             #     log(result)
+    result = np.max(candidatesDf["prod"])
         
     return (result, EXPECTED_RESULT)
