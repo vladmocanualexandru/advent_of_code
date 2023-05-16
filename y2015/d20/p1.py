@@ -11,34 +11,29 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
 
-EXPECTED_RESULT = None
+EXPECTED_RESULT = 776160
+
+MAX_HOUSES = pow(10,6)
  
 def getInputData(inputFile):
     raw = getNumbers_dec(inputFile)
 
     return raw[0] 
 
-def calculateDivSum(number):
-    result = 1 + number
-    for div in range(2, int(number/2)+1, 1):
-         if number % div == 0:
-             result += div
-
-    return result
-
-
 def solution(inputFile):
     targetPresents = getInputData(inputFile)
-    targetDivSum = targetPresents/10
+    targetSum = targetPresents/10
 
-    result = 1
-    houseNumber = 1
-    while result < targetDivSum:
-        result = calculateDivSum(houseNumber)
-        log(houseNumber, result)
-        houseNumber+=1
+    houses = [0 for i in range(MAX_HOUSES)]
 
+    for elfJump in range(1,MAX_HOUSES, 1):
+        for houseNumber in range(elfJump, MAX_HOUSES, elfJump):
+            houses[houseNumber] += elfJump
 
-    log(red(1500012))
+    result = None
+    for houseI in range(MAX_HOUSES):
+        if houses[houseI]>=targetSum:
+            result = houseI
+            break
 
     return (result, EXPECTED_RESULT)
