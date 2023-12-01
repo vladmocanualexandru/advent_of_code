@@ -6,9 +6,9 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
 
-import y2015.d20.p1, y2015.d20.p2
+import y2023.d01.p1, y2023.d01.p2
 
-END_YEAR=2022
+END_YEAR=2023
 
 def runDay(label, inputFile, logic):
     startMs = time.time()

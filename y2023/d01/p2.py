@@ -1,0 +1,50 @@
+import sys, os, math
+import numpy as np
+import pandas as pd
+
+sys.path.append(os.path.abspath(os.path.join('../..')))
+
+from utils import matrixUtils, arrayUtils, numberUtils, geometryUtils
+from utils.inputDataUtils import *
+from utils.stringOpUtils import *
+from utils.terminalUtils import *
+from utils.labelMakerUtils import *
+from utils.solutionRoot import *
+
+EXPECTED_RESULT = 54770
+
+DIGITS = {
+    "zero":"zer0o",
+    "one":"on1e",
+    "two":"tw2o",
+    "three":"thre3e",
+    "four":"fou4r",
+    "five":"fiv5e",
+    "six":"si6x",
+    "seven":"seve7n",
+    "eight":"eigh8t",
+    "nine":"nin9e",
+}
+
+def convertDigits(text):
+    for prop in DIGITS:
+        text = text.replace(prop, DIGITS[prop])
+    
+    return text
+ 
+def getInputData(inputFile):
+    raw = getStrings(inputFile)
+
+    processed=[[int(elem) for elem in convertDigits(entry) if elem.isdigit()] for entry in raw]
+
+    return processed 
+
+def solution(inputFile):
+    inputData = getInputData(inputFile)
+
+    result = 0
+    for entry in inputData:
+        result += entry[0]*10 + entry[-1]
+
+
+    return (result, EXPECTED_RESULT)

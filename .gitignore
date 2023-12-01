@@ -2,5 +2,6 @@ __pycache__/
 playground.ipynb
 .vscode/
 venv
+.venv
 input.txt
 .DS_Store
