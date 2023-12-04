@@ -21,9 +21,10 @@ def getInputData(inputFile):
     return processed 
 
 def solution(inputFile):
+    result = None
+    
     inputData = getInputData(inputFile)
 
     log(inputData)
 
-    result = None
     return (result, EXPECTED_RESULT)
