@@ -89,5 +89,4 @@ def solution(inputFile):
 
     # log(types)
 
-    log(red(250531843))
     return (result, EXPECTED_RESULT)

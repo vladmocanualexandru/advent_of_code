@@ -27,4 +27,5 @@ def solution(inputFile):
 
     log(inputData)
 
+    # log(red())
     return (result, EXPECTED_RESULT)
