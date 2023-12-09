@@ -6,7 +6,7 @@ import time
 
 import utils as utils
 
-startMs = round(time.time()*1000)
+startMs = 0
 
 def log(*output):
     msDiff = round(time.time()*1000 - startMs)
@@ -16,6 +16,8 @@ def logMatrix(matrix, logFunc=log, separator='', highlightElem=(lambda e: str(e)
     return utils.matrixUtils.log(matrix, logFunc, separator, highlightElem)
 
 def runSolution(solutionLogic, inputFile="input.txt"):
+    global startMs
+    startMs = round(time.time()*1000)
     log(utils.terminalUtils.light('---------------------------------------- START -----------------------------------------'))
 
     result = solutionLogic(inputFile)
