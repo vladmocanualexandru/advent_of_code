@@ -73,9 +73,9 @@ def solution(inputFile):
         if zCycle == -1 and z == targetZ:
             zCycle = iterCount 
 
-    xDivs = numberUtils.splitIntoDivisors(xCycle)
-    yDivs = numberUtils.splitIntoDivisors(yCycle)
-    zDivs = numberUtils.splitIntoDivisors(zCycle)
+    xDivs = numberUtils.splitIntoPrimeDivisors(xCycle)
+    yDivs = numberUtils.splitIntoPrimeDivisors(yCycle)
+    zDivs = numberUtils.splitIntoPrimeDivisors(zCycle)
 
     # log(xDivs)
     # log(yDivs)
