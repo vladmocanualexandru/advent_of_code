@@ -110,6 +110,7 @@ def solution(inputFile):
 
     result = max([coordLength[coord] for coord in coordLength]) 
 
+    # log(len(coordLength))
     # fancy rendering
     # for y in range(len(map)):
     #     for x in range(len(map[0])):
@@ -117,7 +118,7 @@ def solution(inputFile):
     #             map[y][x] += "*"
     
 
-    # logMatrix(map, highlightElem=lambda e: redBG(RENDER_MAP[e]) if e == "S*" else cyan(RENDER_MAP[e]) if e[-1]=='*' else dark(RENDER_MAP[e]))
+    # logMatrix(map, highlightElem=lambda e: yellow(RENDER_MAP[e]) if e == "S*" else cyan(RENDER_MAP[e]) if e[-1]=='*' else dark(RENDER_MAP[e]))
     
 
     # log(red())

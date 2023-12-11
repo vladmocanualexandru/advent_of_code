@@ -7,3 +7,4 @@
 || 
 
 ## Gallery
+![visualization screenshot](./d10/visual.png)
