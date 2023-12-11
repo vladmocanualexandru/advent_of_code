@@ -6,7 +6,7 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
 
-import y2023.d08.p1, y2023.d08.p2
+import y2023.d09.p1, y2023.d09.p2
 
 END_YEAR=2023
 
