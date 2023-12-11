@@ -21,7 +21,7 @@ def getInputData(inputFile):
     return processed 
 
 def solution(inputFile):
-    result = None
+    result = 0
     
     inputData = getInputData(inputFile)
 

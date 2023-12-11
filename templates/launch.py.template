@@ -1,0 +1,55 @@
+import os, sys, argparse
+
+sys.path.append(os.path.abspath(os.path.join('../..')))
+
+from utils.inputDataUtils import *
+from utils.stringOpUtils import *
+from utils.terminalUtils import *
+from utils.labelMakerUtils import *
+from utils.solutionRoot import *
+
+import {yearLabel}.{dayLabel}.p1, {yearLabel}.{dayLabel}.p2
+
+def runDay(label, inputFile, logic):
+    startMs = time.time()
+    result = logic(inputFile)
+    elapsedMs = round((time.time() - startMs)*1000)
+    
+    return (label, result[0], formatElapsedMsHuman(elapsedMs), 0 if result[0] == result[1] else 1)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--part", required=False, type=str, default="1")
+
+    args = parser.parse_args()
+
+    if args.part.isnumeric():
+        partLabel = "p%d"%int(args.part)
+
+        runSolution(getattr(getattr(globals()["{yearLabel}"], "{dayLabel}"), partLabel).solution, "input.txt")
+    else:
+        parts = [1,2]
+
+        results = []
+        for part in parts:
+            partLabel = "p%d"%part
+
+            try:
+                logic = getattr(getattr(globals()["{yearLabel}"], "{dayLabel}"), partLabel).solution
+                inputFile = "input.txt"
+
+                results.append(runDay(partLabel, inputFile, logic))
+            except AttributeError:
+                # log(red("ERROR", completeLabel))
+                results.append((partLabel, 'n/a', '               n/a', 3))
+            except:
+                # log(red("ERROR", completeLabel))
+                results.append((partLabel, 'n/a', '               n/a', 2))
+
+            log(dark("Finished", partLabel))
+
+        statusLabels = [green('   OK  '), yellow(' CHECK '), red(' ERROR '), dark('MISSING')]
+
+        log(light(" STATUS | PART |               TIME | RESULT"))
+        for result in results:
+            log(statusLabels[result[-1]], '|  ', result[0],'|', result[2], '|', result[1],)
