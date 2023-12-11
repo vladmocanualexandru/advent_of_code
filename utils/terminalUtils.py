@@ -6,6 +6,17 @@ C_VERT_LINE = '│'
 C_DOT_TRANSPARENT = '◌'
 C_DOT_EMPTY = '○'
 C_DOT_FULL = '●'
+C_SE_CORNER = '┌'
+C_SW_CORNER = '┐'
+C_NE_CORNER = '└'
+C_NW_CORNER = '┘'
+C_NE_CORNER_DOUBLE = '╚'
+C_NW_CORNER_DOUBLE = '╝'
+C_SE_CORNER_DOUBLE = '╔'
+C_SW_CORNER_DOUBLE = '╗'
+C_HORIZ_LINE_DOUBLE = '═'
+C_VERT_LINE_DOUBLE = '║'
+
 
 
 def formatOutput(formatCode, *output):
