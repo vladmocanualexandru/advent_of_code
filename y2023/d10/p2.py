@@ -11,7 +11,7 @@ from utils.terminalUtils import *
 from utils.labelMakerUtils import *
 from utils.solutionRoot import *
 
-EXPECTED_RESULT = None
+EXPECTED_RESULT = 443
 
 RENDER_MAP = {
     "S": C_DOT_FULL,
@@ -23,7 +23,7 @@ RENDER_MAP = {
     "7": C_SW_CORNER,
     "-": C_HORIZ_LINE,
     ".": '.',
-    "x": 'x',
+    "x": yellow('x'),
     "+": C_BLOCK
 }
 
@@ -83,6 +83,19 @@ def solution(inputFile):
     if map[startY][startX+1] in FLOW_MAP["W"]:
         startDirections.append("W")
 
+    if 'E' in startDirections and 'N' in startDirections:
+        map[startY][startX] = '7'
+    elif 'E' in startDirections and 'S' in startDirections:
+        map[startY][startX] = 'J'
+    elif 'E' in startDirections and 'W' in startDirections:
+        map[startY][startX] = '-'
+    elif 'N' in startDirections and 'S' in startDirections:
+        map[startY][startX] = '|'
+    elif 'N' in startDirections and 'W' in startDirections:
+        map[startY][startX] = 'F'
+    elif 'S' in startDirections and 'W' in startDirections:
+        map[startY][startX] = 'L'
+
     # using one of the directions, build the cycle
     cycleCoords = [(startY, startX)]
 
@@ -107,80 +120,114 @@ def solution(inputFile):
        
         direction = FLOW_MAP[direction][map[y][x]]
 
-    log("cycle coords computed")
-
-
     # replace elements foreign to the main cycle with empty space
     for y in range(len(map)):
         for x in range(len(map[0])):
             if not (y,x) in cycleCoords:
                 map[y][x] = '.'
 
-    log("map cleaned")
+    # walk the cycle and mark any open spot on the right hand side as inside
+    orientation = 'N'
+    if 'N' in startDirections:
+        orientation = 'E'
+        if 'E' in startDirections:
+            orientation = 'S'
 
-    
-    logMatrix(map, highlightElem=lambda e: yellow(RENDER_MAP[e]) if e == "S" else cyan(RENDER_MAP[e]) if e[-1]!='.' else dark(RENDER_MAP[e]))
+    x = startX
+    y = startY
 
-    # expand the map, to remove touching walls
-    newMap = matrixUtils.generate(len(map)*2, len(map[0])*2, '.')
+    internalLocations = []
+    while (True):
+        if orientation == 'N':
+           if map[y][x+1] == '.':
+               map[y][x+1] = 'x'
+               internalLocations.append((y,x+1))
 
-    cycleCoords = [(2*coord[0], 2*coord[1]) for coord in cycleCoords]
+           y-=1
+        elif orientation == 'E':
+           if map[y+1][x] == '.':
+               map[y+1][x] = 'x'
+               internalLocations.append((y+1,x))
 
-    fillerCoords = []
-    for cCoordIndex in range(len(cycleCoords)):
-        coord0 = cycleCoords[cCoordIndex]
-        coord1 = cycleCoords[(cCoordIndex+1)%len(cycleCoords)]
-        fillerCoord = (int((coord0[0]+coord1[0])/2),int((coord0[1]+coord1[1])/2))
-        fillerCoords.append(fillerCoord)
+           x+=1
+        elif orientation == 'S':
+           if map[y][x-1] == '.':
+               map[y][x-1] = 'x'
+               internalLocations.append((y,x-1))
 
-    log("filler cycle elements computed")
+           y+=1
+        else:
+           if map[y-1][x] == '.':
+               map[y-1][x] = 'x'
+               internalLocations.append((y-1,x))
 
-    for cycleCoord in cycleCoords:
-        newMap[cycleCoord[0]][cycleCoord[1]] = "+"
+           x-=1
 
-    for fillerCoord in fillerCoords:
-        newMap[fillerCoord[0]][fillerCoord[1]] = "+"
-
-    map = newMap
-
-    log("expanded map built")
-
-    # find inside cell
-    insideCellCoord = None
-    for y in range(len(map)):
-        for x in range(len(map[0])-1):
-            if map[y][x] == '+':
-                if map[y][x+1] == '.':
-                    insideCellCoord = (y,x+1)
-
-                break
-
-        if not insideCellCoord == None:
+        if x == startX and y == startY:
             break
 
-    log("inside cell found")
-    # map[insideCellCoord[0]][insideCellCoord[1]] = 'S'   
+        if map[y][x] == 'F':
+            if orientation == 'N':
+                orientation = 'E'
+            elif orientation == 'W':
+                if map[y-1][x] == '.':
+                    map[y-1][x] = 'x'
+                    internalLocations.append((y-1,x))
+                orientation = 'S'
+        elif map[y][x] == '7':
+            if orientation == 'N':
+                if map[y][x+1] == '.':
+                    map[y][x+1] = 'x'
+                    internalLocations.append((y,x+1))
+                orientation = 'W'
+            elif orientation == 'E':
+                orientation = 'S'
+        elif map[y][x] == 'J':
+            if orientation == 'S':
+                orientation = 'W'
+            elif orientation == 'E':
+                if map[y+1][x] == '.':
+                    map[y+1][x] = 'x'
+                    internalLocations.append((y+1,x))
+                orientation = 'N'
+        elif map[y][x] == 'L':
+            if orientation == 'S':
+                if map[y][x-1] == '.':
+                    map[y][x-1] = 'x'
+                    internalLocations.append((y,x-1))
+                orientation = 'E'
+            elif orientation == 'W':
+                orientation = 'N'
 
+    # find every internal x and search for immediate unmarked neighbors 
+    allCellsMarked = False
+    while not allCellsMarked:
+        allCellsMarked = True
 
-    # fill inside area with 'x'
-    fillAreaX(insideCellCoord[0],insideCellCoord[1],map)
+        # unmarked neighbors are added to the list to be verified during next iteration
+        moreInternalLocations = []
+        for (iLy, iLx) in internalLocations:
+            if map[iLy-1][iLx] == '.':
+                map[iLy-1][iLx] = 'x'
+                allCellsMarked = False
+                moreInternalLocations.append((iLy-1, iLx))
+            if map[iLy+1][iLx] == '.':
+                map[iLy+1][iLx] = 'x'
+                allCellsMarked = False
+                moreInternalLocations.append((iLy+1, iLx))
+            if map[iLy][iLx-1] == '.':
+                map[iLy][iLx-1] = 'x'
+                allCellsMarked = False
+                moreInternalLocations.append((iLy, iLx-1))
+            if map[iLy][iLx+1] == '.':
+                map[iLy][iLx+1] = 'x'
+                allCellsMarked = False
+                moreInternalLocations.append((iLy, iLx+1))
 
-    log("inside area marked")
-    logMatrix(map, highlightElem=lambda e: yellow(RENDER_MAP[e]) if e == "S" else cyan(RENDER_MAP[e]) if e[-1]!='.' else dark(RENDER_MAP[e]))
-
-    # contract the map
-    newMap = matrixUtils.generate(int(len(map)/2), int(len(map[0])/2), '.')
-    for y in range(len(map)-1,-1,-1):
-        for x in range(len(map[0])-1,-1,-1):
-            newMap[int(y/2)][int(x/2)] = map[y][x]
-    map = newMap 
-
-    log("map contracted")
-
-    logMatrix(map, highlightElem=lambda e: yellow(RENDER_MAP[e]) if e == "S" else cyan(RENDER_MAP[e]) if e[-1]!='.' else dark(RENDER_MAP[e]))
+        internalLocations += moreInternalLocations
 
     # count number of 'x'    
-    result = len(matrixUtils.find(map, returnCondition=lambda e: e == 'x'))
+    result = len(internalLocations)
 
     # log(red())
     return (result, EXPECTED_RESULT)
