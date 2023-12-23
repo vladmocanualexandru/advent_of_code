@@ -6,7 +6,10 @@ dayFolder = path = os.path.join(yearFolder, dayLabel)
 
 os.mkdir(dayFolder)
 
-with open(os.path.join(dayFolder, 'input.txt'), 'w') as tf:
+with open(os.path.join(dayFolder, 'example.data'), 'w') as tf:
+    pass
+
+with open(os.path.join(dayFolder, 'test.data'), 'w') as tf:
     pass
 
 shutil.copyfile(os.path.join('templates', 'p.py.template'), os.path.join(dayFolder, 'p1.py'))

@@ -20,13 +20,16 @@ def runDay(label, inputFile, logic):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--part", required=False, type=str, default="1")
+    parser.add_argument("--data", required=False, type=str, default="example")
 
     args = parser.parse_args()
+
+    inputFile = args.data + ".data"
 
     if args.part.isnumeric():
         partLabel = "p%d"%int(args.part)
 
-        runSolution(getattr(getattr(globals()["{yearLabel}"], "{dayLabel}"), partLabel).solution, "input.txt")
+        runSolution(getattr(getattr(globals()["{yearLabel}"], "{dayLabel}"), partLabel).solution, inputFile)
     else:
         parts = [1,2]
 
@@ -36,7 +39,6 @@ if __name__ == "__main__":
 
             try:
                 logic = getattr(getattr(globals()["{yearLabel}"], "{dayLabel}"), partLabel).solution
-                inputFile = "input.txt"
 
                 results.append(runDay(partLabel, inputFile, logic))
             except AttributeError:

@@ -4,5 +4,7 @@ playground.ipynb
 venv
 .venv
 input.txt
+example.data
+test.data
 .DS_Store
 launch.py
