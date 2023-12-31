@@ -1,4 +1,4 @@
-import sys, os, math
+import sys, os, math, time
 import numpy as np
 import pandas as pd
 
@@ -23,11 +23,12 @@ def getInputData(inputFile):
 def solution(inputFile):
     result = 0
 
-    REPETITION FOUND
+    # After x iterations a sequence of y iterations is repeated; 
+    # Solution: find x and y; result: iteration #( (1000000000 - x) % y )
     
     map = getInputData(inputFile)
 
-    iterations = 1000
+    iterations = 10000
     orientation = 0
     results = []
 
@@ -50,8 +51,10 @@ def solution(inputFile):
                     result += len(map) - lineIndex
 
         resultTuple = (result, orientation)
+        log(it,  resultTuple)
         if resultTuple in results:
-            log(green("BINGO! iteration=", it,  resultTuple))
+            log(green("REPETITION!"))
+            time.sleep(1)
 
         results.append(resultTuple)
 
